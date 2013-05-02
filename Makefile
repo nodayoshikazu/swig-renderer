@@ -22,6 +22,8 @@ test:
 	node ./lib/index.js -f ./test/sample1.json ./test/sample1.swig
 	node ./lib/index.js ./test/sample-fail.swig  < ./test/sample1.json
 	node ./lib/index.js -f ./test/sample1.json ./test/sample-fail.swig
+	node ./lib/index.js ./test/sample1.swig  < ./test/sample1-bad.json
+	node ./lib/index.js -f ./test/sample1-bad.json ./test/sample1.swig
 
 dist: clean init docs build test
 

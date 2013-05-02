@@ -32,10 +32,14 @@ module.exports = class SwigRenderer
         if @jsonfile
             fs.exists @jsonfile, (exists) =>
                 if exists
-                    @vars  = JSON.parse(fs.readFileSync(@jsonfile))
+                    try
+                        @vars  = JSON.parse(fs.readFileSync(@jsonfile))
+                    catch err
+                        console.log 'Error: malformed JSON'
+                        return -1
                     @_render()
                 else
-                    console.log 'Error: file #{jsonfile} doesn\'t exist'
+                    console.log "Error: file #{jsonfile} doesn\'t exist"
                     process.exit(1)
         else
             @_do_stdin()
@@ -48,7 +52,11 @@ module.exports = class SwigRenderer
         process.stdin.setEncoding('utf8')
         process.stdin.on 'data', (chunk) =>
             if not chunk.match /^[ \t\n]*$/g
-                @vars = JSON.parse(chunk)
+                try
+                    @vars = JSON.parse(chunk)
+                catch err
+                    console.log 'Error: malformed JSON'
+                    return -1
             
         process.stdin.on 'end', () =>
             @_render()
@@ -57,20 +65,22 @@ module.exports = class SwigRenderer
     # Render the template with the variables defined in the JSON file.
     # 
     _render: () ->
-        if @vars
+        if not @vars
+            console.log 'Error: no replacement variables are defined'
+        else
             _.each @swig_tmpls, (tmpl) =>
                 if not tmpl.match /^\/.*$/g
                     path = process.cwd() + '/' + tmpl
                 else
                     path = tmpl
                 exists = fs.existsSync(tmpl)
-                exists.should.be.true
+                # Actually it shouldn't be a fatal error if a template file doesn't exist
                 if exists
                     t = swig.compileFile(path)
                     r = t.render(@vars)
                     console.log r
-        else
-            console.log 'Error: no variables are defined'
+                else
+                    console.log "Error: #{tmpl} does not exist"
 
 # Run it
 program
