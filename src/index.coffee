@@ -3,11 +3,11 @@
 #     Swig template renderer command line tool
 #
 # 
-_ = require('underscore')
-should = require('should')
-swig = require('swig')
+_       = require('underscore')
+should  = require('should')
+swig    = require('swig')
 program = require('commander')
-fs = require('fs')
+fs      = require('fs')
 
 
 
