@@ -15,7 +15,7 @@ clean: clean-docs
 	rm -rf lib/ test/*.js
 
 build:
-	coffee -o lib/ -c src/
+	./node_modules/coffee-script/bin/coffee -o lib/ -c src/
 
 test:
 	node ./lib/index.js ./test/sample1.swig  < ./test/sample1.json
